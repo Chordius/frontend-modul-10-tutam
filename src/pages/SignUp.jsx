@@ -77,7 +77,7 @@ export default function SignUp() {
 
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-cyan-400 transition-colors">
-              <i className="fas fa-user"></i>
+              <i className="fa-regular fa-envelope"></i>
             </div>
             <input 
               name="email" 

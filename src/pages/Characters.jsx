@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CharacterCard from '../components/CharacterCard';
@@ -13,14 +14,13 @@ function Characters() {
     useEffect(() => {
         const loadCharacters = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/characters/`);
-                const data = await response.json();
+                const response = await axios.get(`${API_BASE_URL}/characters/`);
 
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Failed to fetch characters');
+                if (!response.data.success) {
+                    throw new Error(response.data.message || 'Failed to fetch characters');
                 }
 
-                setCharacters(Array.isArray(data.data) ? data.data : []);
+                setCharacters(Array.isArray(response.data.data) ? response.data.data : []);
             } catch (err) {
                 setError(err.message || 'Failed to fetch characters');
             } finally {

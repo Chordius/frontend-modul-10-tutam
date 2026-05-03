@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { API_BASE_URL } from '../config/env';
@@ -44,29 +45,25 @@ function Admin() {
         const loadData = async () => {
             try {
                 const [forumsRes, charsRes] = await Promise.all([
-                    fetch(`${API_BASE_URL}/forums/`),
-                    fetch(`${API_BASE_URL}/characters/`)
+                    axios.get(`${API_BASE_URL}/forums/`),
+                    axios.get(`${API_BASE_URL}/characters/`)
                 ]);
 
-                if (forumsRes.ok) {
-                    const forumsData = await forumsRes.json();
-                    let forumsArray = [];
-                    if (Array.isArray(forumsData)) {
-                        forumsArray = forumsData;
-                    } else if (forumsData && Array.isArray(forumsData.data)) {
-                        forumsArray = forumsData.data;
-                    } else if (forumsData && Array.isArray(forumsData.search)) {
-                        forumsArray = forumsData.search;
-                    } else {
-                        console.warn('Unexpected forums response:', forumsData);
-                    }
-                    setForums(forumsArray);
+                let forumsArray = [];
+                const forumsData = forumsRes.data;
+                if (Array.isArray(forumsData)) {
+                    forumsArray = forumsData;
+                } else if (forumsData && Array.isArray(forumsData.data)) {
+                    forumsArray = forumsData.data;
+                } else if (forumsData && Array.isArray(forumsData.search)) {
+                    forumsArray = forumsData.search;
+                } else {
+                    console.warn('Unexpected forums response:', forumsData);
                 }
+                setForums(forumsArray);
 
-                if (charsRes.ok) {
-                    const charsData = await charsRes.json();
-                    setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
-                }
+                const charsData = charsRes.data;
+                setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
             } catch (err) {
                 console.error('Failed to load data:', err);
             }
@@ -81,47 +78,35 @@ function Admin() {
         setMessage('');
 
         try {
-            const response = await fetch(`${API_BASE_URL}/forums/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title: forumTitle,
-                    introduction: forumIntroduction,
-                    content: forumContent,
-                    author: forumAuthor
-                })
+            await axios.post(`${API_BASE_URL}/forums/create`, {
+                title: forumTitle,
+                introduction: forumIntroduction,
+                content: forumContent,
+                author: forumAuthor
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create forum');
-            }
-
-            setMessage('✓ Forum created successfully!');
+            setMessage('Forum created successfully!');
             setForumTitle('');
             setForumIntroduction('');
             setForumContent('');
             setForumAuthor('');
 
             // Reload forums
-            const forumsRes = await fetch(`${API_BASE_URL}/forums/`);
-            if (forumsRes.ok) {
-                const forumsData = await forumsRes.json();
-                let forumsArray = [];
-                if (Array.isArray(forumsData)) {
-                    forumsArray = forumsData;
-                } else if (forumsData && Array.isArray(forumsData.data)) {
-                    forumsArray = forumsData.data;
-                } else if (forumsData && Array.isArray(forumsData.search)) {
-                    forumsArray = forumsData.search;
-                } else {
-                    console.warn('Unexpected forums response:', forumsData);
-                }
-                setForums(forumsArray);
+            const forumsRes = await axios.get(`${API_BASE_URL}/forums/`);
+            let forumsArray = [];
+            const forumsData = forumsRes.data;
+            if (Array.isArray(forumsData)) {
+                forumsArray = forumsData;
+            } else if (forumsData && Array.isArray(forumsData.data)) {
+                forumsArray = forumsData.data;
+            } else if (forumsData && Array.isArray(forumsData.search)) {
+                forumsArray = forumsData.search;
+            } else {
+                console.warn('Unexpected forums response:', forumsData);
             }
+            setForums(forumsArray);
         } catch (err) {
-            setMessage(`✗ Error: ${err.message}`);
+            setMessage(`Error: ${err.message}`);
         } finally {
             setLoading(false);
         }
@@ -133,39 +118,27 @@ function Admin() {
         setMessage('');
 
         try {
-            const response = await fetch(`${API_BASE_URL}/characters/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: charName,
-                    element: charElement,
-                    rarity: parseInt(charRarity),
-                    page: charPage,
-                    skills: charSkills.filter(s => s.skill_name && s.skill_detail)
-                })
+            await axios.post(`${API_BASE_URL}/characters/create`, {
+                name: charName,
+                element: charElement,
+                rarity: parseInt(charRarity),
+                page: charPage,
+                skills: charSkills.filter(s => s.skill_name && s.skill_detail)
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create character');
-            }
-
-            setMessage('✓ Character created successfully!');
+            setMessage('Character created successfully!');
             setCharName('');
             setCharElement('');
-            setCharRarity(4)
-            setCharSkills([{ skill_name: '', skill_detail: '' }]);;
+            setCharRarity(4);
+            setCharSkills([{ skill_name: '', skill_detail: '' }]);
             setCharPage('');
 
             // Reload characters
-            const charsRes = await fetch(`${API_BASE_URL}/characters/`);
-            if (charsRes.ok) {
-                const charsData = await charsRes.json();
-                setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
-            }
+            const charsRes = await axios.get(`${API_BASE_URL}/characters/`);
+            const charsData = charsRes.data;
+            setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
         } catch (err) {
-            setMessage(`✗ Error: ${err.message}`);
+            setMessage(`Error: ${err.message}`);
         } finally {
             setLoading(false);
         }
@@ -177,25 +150,16 @@ function Admin() {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/characters/${charId}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
-            });
+            await axios.delete(`${API_BASE_URL}/characters/${charId}`);
 
-            if (!response.ok) {
-                throw new Error('Failed to delete character');
-            }
-
-            setMessage('✓ Character deleted successfully!');
+            setMessage('Character deleted successfully!');
 
             // Reload characters
-            const charsRes = await fetch(`${API_BASE_URL}/characters/`);
-            if (charsRes.ok) {
-                const charsData = await charsRes.json();
-                setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
-            }
+            const charsRes = await axios.get(`${API_BASE_URL}/characters/`);
+            const charsData = charsRes.data;
+            setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
         } catch (err) {
-            setMessage(`✗ Error: ${err.message}`);
+            setMessage(`Error: ${err.message}`);
         }
     };
 

@@ -7,23 +7,31 @@ function CharacterCard({ character }) {
     const imgSrc = `/src/assets/portrait_${name}.png`;
 
     const elementColorMap = {
-        Fire: 'bg-red-700',
-        Water: 'bg-blue-700',
-        Wind: 'bg-green-700',
-        Earth: 'bg-amber-700',
-        Lightning: 'bg-violet-700'
+        Fire: 'bg-[#dc5151]',
+        Water: 'bg-[#82abcd]',
+        Wind: 'bg-[#82cd98]',
+        Earth: 'bg-[#8B572A]',
+        Lightning: 'bg-[#aa61b7]'
+    };
+
+    const rarityGradientMap = {
+        5: 'from-[#fbbf24] to-[#f97316] bg-gradient-to-b',
+        4: 'from-[#a855f7] to-[#06b6d4] bg-gradient-to-b',
     };
 
     return (
         <Link to={`/character/${character._id}`}>
-            <div className='bg-cyan-950 rounded-lg overflow-hidden hover:shadow-lg hover:scale-105 transition-transform cursor-pointer h-64 flex flex-col'>
+            <div className='bg-cyan-950 w-48 rounded-lg overflow-hidden hover:shadow-lg hover:scale-105 transition-transform cursor-pointer h-64 flex flex-col'>
                 {/* Character Image Placeholder */}
-                <div className='relative w-full h-40 bg-gradient-to-b from-purple-600 to-cyan-900 flex items-center justify-center overflow-hidden'>
+                <div 
+                    className={`relative w-full h-40 flex items-center justify-center overflow-hidden ${rarityGradientMap[character.rarity] || rarityGradientMap[4]}`}
+                >
                     {!imageError ? (
                         <img
                             src={imgSrc}
                             alt={character.name}
-                            className='absolute inset-0 m-auto h-36 object-contain z-10'
+                            className='absolute inset-0 w-full h-full object-cover z-10'
+                            style={{objectPosition: 'center 30%'}}
                             width={450}
                             height={450}
                             onError={() => setImageError(true)}
@@ -38,7 +46,7 @@ function CharacterCard({ character }) {
                     <h3 className='font-bold text-lg truncate'>{character.name}</h3>
                     
                     <div className='flex gap-2 text-sm'>
-                        <span className={`${elementColorMap[character.element] || 'bg-blue-700'} px-2 py-1 rounded`}>{character.element}</span>
+                        <span className={`${elementColorMap[character.element]} || 'bg-blue-700'} px-2 py-1 rounded`}>{character.element}</span>
                         <span className='bg-yellow-700 px-2 py-1 rounded'>
                             ★ {character.rarity}
                         </span>

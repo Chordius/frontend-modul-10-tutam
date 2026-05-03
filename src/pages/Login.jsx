@@ -60,7 +60,7 @@ export default function Login() {
         <form onSubmit={submitData} className="flex flex-col gap-5 relative z-10">
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-neonAccent transition-colors">
-              <i className="fas fa-user"></i>
+              <i className="fa-regular fa-envelope"></i>
             </div>
             <input 
               name="email" 

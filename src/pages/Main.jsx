@@ -1,14 +1,8 @@
-import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Card from '../components/Card';
-import { API_BASE_URL } from '../config/env';
 
 function Main() {
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
     const card = [
         {
             id: 1,
@@ -27,29 +21,26 @@ function Main() {
             title: "Tier List",
             image: "https://picsum.photos/500",
             link: "/"
+        },
+        {
+            id: 4,
+            title: "Equipment",
+            image: "https://picsum.photos/500",
+            link: "/"
+        },
+        {
+            id: 5,
+            title: "Banners",
+            image: "https://picsum.photos/500",
+            link: "/"
+        },
+        {
+            id: 6,
+            title: "Boss Guide",
+            image: "https://picsum.photos/500",
+            link: "/"
         }
     ]
-
-    useEffect(() => {
-        const loadItems = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/items`);
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Failed to fetch items');
-                }
-
-                setItems(Array.isArray(data.payload) ? data.payload : []);
-            } catch (err) {
-                setError(err.message || 'Failed to fetch items');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadItems();
-    }, []);
 
     return (
         <div className='flex flex-col min-h-screen'>
@@ -72,9 +63,15 @@ function Main() {
 
                 <div className='flex flex-col'>
                     <div className='font-bold'>
-                        🟦 SHORTCUTS
+                        <div className='flex flex-row gap-x-2 text-xl pb-2'> 
+                            <i
+                                className="fa-solid fa-square pt-1"
+                                style={{color: '#02C4BE'}}
+                            ></i>
+                            SHORTCUTS
+                        </div>
                         <hr className='py-3'/>
-                        <div className='grid grid-cols-3 grid-rows-1 gap-x-3'>
+                        <div className='grid grid-cols-3 grid-rows-1 gap-3'>
                             {card.map((item) => (
                                 <Card key={item.id} item={item} />
                             ))}

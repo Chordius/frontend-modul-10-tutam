@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { API_BASE_URL } from '../config/env';
@@ -17,26 +18,38 @@ function CharacterReview() {
         const name = character.name.toLowerCase().replace(/\s+/g, '_');
         return `/src/assets/portrait_${name}.png`;
     };
-
-    const elementColorMap = {
-        Fire: 'bg-red-700',
-        Water: 'bg-blue-700',
-        Wind: 'bg-green-700',
-        Earth: 'bg-amber-700',
-        Lightning: 'bg-violet-700'
+    
+    const elementIconColorMap = {
+        Fire: '#dc5151',
+        Water: '#82abcd',
+        Wind: '#82cd98',
+        Earth: '#8B572A',
+        Lightning: '#aa61b7'
     };
 
+    const elementCardColorMap = {
+        Fire: { bg: 'from-[#5a1f1f]', border: 'border-[#a84545]', text: 'text-[#ff9999]' },
+        Water: { bg: 'from-[#1a3a52]', border: 'border-[#4a7a9e]', text: 'text-[#6eb3e8]' },
+        Wind: { bg: 'from-[#29665C]', border: 'border-[#458a5f]', text: 'text-[#7fd9a1]' },
+        Earth: { bg: 'from-[#4a3420]', border: 'border-[#9a6b3f]', text: 'text-[#d4a574]' },
+        Lightning: { bg: 'from-[#3a1a4a]', border: 'border-[#8a5a9a]', text: 'text-[#d4a1ff]' }
+    };
+
+    const rarityGradientMap = {
+        5: 'from-[#fbbf24] to-[#f97316] bg-gradient-to-b',
+        4: 'from-[#a855f7] to-[#06b6d4] bg-gradient-to-b',
+    };
+    
     useEffect(() => {
         const loadCharacter = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/characters/${id}`);
-                const data = await response.json();
+                const response = await axios.get(`${API_BASE_URL}/characters/${id}`);
 
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Failed to fetch character');
+                if (!response.data.success) {
+                    throw new Error(response.data.message || 'Failed to fetch character');
                 }
 
-                setCharacter(data.data);
+                setCharacter(response.data.data);
             } catch (err) {
                 setError(err.message || 'Failed to fetch character');
             } finally {
@@ -115,12 +128,14 @@ function CharacterReview() {
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mb-6'>
                     {/* Character Image/Visual */}
                     <div className='flex items-center justify-center'>
-                        <div className='relative bg-gradient-to-b from-purple-600 to-cyan-900 rounded-lg w-full h-80 flex items-center justify-center overflow-hidden'>
+                        <div 
+                            className={`relative rounded-lg w-full h-80 flex items-center justify-center overflow-hidden ${rarityGradientMap[character.rarity] || rarityGradientMap[4]}`}
+                        >
                             {!imageError ? (
                                 <img
                                     src={getCharacterImage()}
                                     alt={character.name}
-                                    className='absolute inset-0 m-auto h-72 object-contain z-10'
+                                    className='absolute w-fit h-fit object-cover z-10'
                                     onError={() => setImageError(true)}
                                 />
                             ) : (
@@ -136,22 +151,32 @@ function CharacterReview() {
                             <h1 className='text-4xl font-bold mb-4'>{character.name}</h1>
                             
                             <div className='flex gap-3 mb-6 flex-wrap'>
-                                {/* TODO: Change this bg-blue-700 to be dynamic depending on the element of the character */}
-                                <div className={`${elementColorMap[character.element] || 'bg-blue-700'} px-4 py-2 rounded-lg`}>
-                                    <div className='text-xs opacity-75'>Element</div>
-                                    <div className='font-bold text-lg'>{character.element}</div>
-                                </div>
-                                <div className='bg-yellow-700 px-4 py-2 rounded-lg'>
-                                    <div className='text-xs opacity-75'>Rarity</div>
-                                    <div className='font-bold text-lg'>{'★ '.repeat(character.rarity)}</div>
-                                </div>
+                            <div 
+                                className='px-4 py-2 rounded-lg'
+                                style={{backgroundColor: elementIconColorMap[character.element] || '#1d4ed8'}}
+                            >
+                                <div className='text-xs opacity-75'>Element</div>
+                                <div className='font-bold text-lg'>{character.element}</div>
+                            </div>
+                            <div 
+                                className={`px-4 py-2 rounded-lg bg-gradient-to-r from-5% to-95% to-[#1a3a52] ${elementCardColorMap[character.element]?.bg || 'bg-[#1a3a52]'}`}
+                            >
+                                <div className='text-xs opacity-75'>Rarity</div>
+                                <div className='font-bold text-lg'>{'★ '.repeat(character.rarity)}</div>
+                            </div>
                             </div>
                         </div>
 
                         {/* Character Description from Forum */}
                         {character.page && (
                             <div className='p-6'>
-                                <h2 className='text-xl font-bold mb-4'>🟦 INTRODUCTION</h2>
+                                <h2 className='text-xl font-bold mb-4 flex flex-row gap-x-2'>
+                                    <i
+                                        className="fa-solid fa-square pt-1"
+                                        style={{color: elementIconColorMap[character.element] || '#1d4ed8'}}
+                                    ></i>
+                                    INTRODUCTION
+                                </h2>
                                 <hr className='py-2'/>
                                 <p className='text-gray-300 leading-relaxed'>
                                     {character.page.introduction}
@@ -163,15 +188,24 @@ function CharacterReview() {
 
                 {/* Details */}
                 <div className='mb-6'>
-                    <div className='text-xl font-bold py-2'>
-                    🟦 SKILLS
+                    <div className='text-xl font-bold py-2 flex flex-row gap-x-2'>
+                        <i 
+                            className="fa-solid fa-square pt-1"
+                            style={{color: elementIconColorMap[character.element] || '#1d4ed8'}}
+                        ></i>
+                        SKILLS
                     </div>
                     <hr className='py-3'/>
                     {character.skills && character.skills.length > 0 ? (
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                             {character.skills.map((skill, index) => (
-                                <div key={index} className='bg-cyan-950 p-4 rounded border border-cyan-700 hover:border-cyan-600 transition'>
-                                    <h3 className='text-lg font-bold mb-2 text-cyan-400'>{skill.skill_name}</h3>
+                                <div 
+                                    key={index} 
+                                    className={`bg-gradient-to-b bg-[#1A2435] p-4 rounded border transition hover:opacity-80 ${elementCardColorMap[character.element]?.bg || 'bg-[#1a3a52]'} ${elementCardColorMap[character.element]?.border || 'border-[#4a7a9e]'}`}
+                                >
+                                    <h3 
+                                        className={`text-lg font-bold mb-2 ${elementCardColorMap[character.element]?.text || 'text-[#6eb3e8]'}`}
+                                    >{skill.skill_name}</h3>
                                     <p className='text-gray-300'>{skill.skill_detail}</p>
                                 </div>
                             ))}
@@ -181,12 +215,18 @@ function CharacterReview() {
                     )}
                 </div>
                 <div className='mb-6'>
-                    <div className='text-2xl font-bold py-2'>
-                    🟦 REVIEW ({character.page?.author?.username || 'Unknown'})
+                    <div className='text-2xl font-bold py-2 flex flex-row gap-x-2'>
+                        <i 
+                            className="fa-solid fa-square pt-1" 
+                            style={{color: elementIconColorMap[character.element] || '#1d4ed8'}}
+                        ></i>
+                        REVIEW ({character.page?.author?.username || 'Unknown'})
                     </div>
                     <hr className='py-3'/>
                     {character.page && (
-                        <div className='bg-cyan-950 p-6 rounded border border-cyan-800'>
+                        <div 
+                            className= "bg-[#1A2435] p-6 border-2 border-[#263246]"
+                        >
                             <p className='text-gray-300 leading-relaxed whitespace-pre-wrap'>
                                 {character.page.content}
                             </p>
