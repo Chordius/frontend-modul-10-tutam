@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/logoSBD.png';
 
 export default function Navbar() {
-    const [cookies, setCookies, removeCookies] = useCookies(["username", "isLoggedIn", "userId", "email"]);
+    const [cookies, , removeCookies] = useCookies(["username", "isLoggedIn", "userId", "email"]);
     const navigate = useNavigate();
     
     const handleLogout = () => {
@@ -46,12 +46,12 @@ export default function Navbar() {
                         <NavLink to='/characters' className={navLinkClass}>Characters</NavLink>
                         {isLoggedIn ? (
                             <>
-                                <NavLink
+                                <button
                                     onClick={handleLogout}
                                     className={navLinkLogClass}
                                 >
                                     Logout
-                                </NavLink>
+                                </button>
                             </>
                         ) : (
                             <NavLink to='/login' className={navLinkClass}>Login</NavLink>
