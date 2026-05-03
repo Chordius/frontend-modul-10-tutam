@@ -27,18 +27,13 @@ export default function Navbar() {
                             Jesaya Hamonangan
                         </span>
                     </NavLink>
-                    <div className='hidden md:flex items-center gap-2'>
-                        <NavLink to='/' className={navLinkClass}>Home</NavLink>
-                        <NavLink to='/characters' className={navLinkClass}>Characters</NavLink>
-                    </div>
                 </div>
                 <div className="flex items-center gap-6">
-                    <span className="font-medium text-slate-300 border-r border-slate-700 pr-6">
-                        {cookies.username}
-                    </span>
-                    <NavLink to="/" onClick={handleLogout} className="text-sm text-slate-400 hover:text-neonError transition-colors">
-                        Logout
-                    </NavLink>
+                    <div className='hidden md:flex items-center gap-2'>
+                        <NavLink to='/' className={navLinkClass}>Home</NavLink>
+                        <NavLink to='/login' className={navLinkClass}>Login</NavLink>
+                        <NavLink to='/characters' className={navLinkClass}>Characters</NavLink>
+                    </div>
                 </div>
             </div>
         </div>
