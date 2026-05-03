@@ -22,9 +22,8 @@ export default function Navbar() {
             <div className="glass-panel mx-auto max-w-5xl mt-4 px-6 flex justify-between items-center h-20">
                 <div className="flex items-center gap-8">
                     <NavLink to="/" className="flex items-center gap-3">
-                        <img src={logo} alt="logo" className="w-10 h-10" />
                         <span className="text-2xl font-bold bg-gradient-to-r from-neonAccent to-cyan-400 bg-clip-text text-transparent tracking-wide">
-                            Jesaya Hamonangan
+                            PiratesWiki
                         </span>
                     </NavLink>
                 </div>

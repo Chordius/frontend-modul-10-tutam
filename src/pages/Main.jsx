@@ -14,7 +14,7 @@ function Main() {
             id: 1,
             title: "Introduction to the game",
             image: "https://picsum.photos/500",
-            link: "login"
+            link: "/"
         },
         {
             id: 2,
@@ -26,7 +26,7 @@ function Main() {
             id: 3,
             title: "Tier List",
             image: "https://picsum.photos/500",
-            link: "login"
+            link: "/"
         }
     ]
 
@@ -73,7 +73,7 @@ function Main() {
                 <div className='flex flex-col'>
                     <div className='font-bold'>
                         🟦 SHORTCUTS
-                        <hr/>
+                        <hr className='py-3'/>
                         <div className='grid grid-cols-3 grid-rows-1 gap-x-3'>
                             {card.map((item) => (
                                 <Card key={item.id} item={item} />
