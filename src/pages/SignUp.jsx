@@ -35,10 +35,10 @@ export default function SignUp() {
     
     signUpUser(formData)
     .then((response) => {
-      if (response.data != null) {
+      if (response != null) {
         console.log("This is the Data:", response)
         alert("Successfully registered account");
-        navigate("/");
+        navigate("/login");
       } else {
         console.log("This is the Data:", response)
         alert("Failed to register account!");
@@ -59,22 +59,7 @@ export default function SignUp() {
           Create Account
         </h2>
         
-        <form onSubmit={submitData} className="flex flex-col gap-5 relative z-10">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-cyan-400 transition-colors">
-              <i className="fas fa-user"></i>
-            </div>
-            <input 
-              name="name" 
-              type="text" 
-              onChange={change} 
-              value={formData.name} 
-              placeholder="Name" 
-              className="w-full bg-slate-800/50 border border-slate-700 text-slate-200 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder-slate-500"
-              required 
-            />
-          </div>
-          
+        <form onSubmit={submitData} className="flex flex-col gap-5 relative z-10">         
           <div className="relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-cyan-400 transition-colors">
               <i className="fas fa-user"></i>
@@ -100,21 +85,6 @@ export default function SignUp() {
               onChange={change} 
               value={formData.email} 
               placeholder="Email" 
-              className="w-full bg-slate-800/50 border border-slate-700 text-slate-200 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder-slate-500"
-              required 
-            />
-          </div>
-
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-cyan-400 transition-colors">
-              <i className="fas fa-user"></i>
-            </div>
-            <input 
-              name="phone" 
-              type="text" 
-              onChange={change} 
-              value={formData.phone} 
-              placeholder="Phone" 
               className="w-full bg-slate-800/50 border border-slate-700 text-slate-200 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder-slate-500"
               required 
             />

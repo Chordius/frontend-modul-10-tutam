@@ -21,9 +21,16 @@ export default function Navbar() {
         <div className="sticky top-0 z-50 w-full mb-8">
             <div className="glass-panel mx-auto max-w-5xl mt-4 px-6 flex justify-between items-center h-20">
                 <div className="flex items-center gap-8">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-neonAccent to-cyan-400 bg-clip-text text-transparent tracking-wide">
-                        Jesaya Hamonangan
-                    </span>
+                    <NavLink to="/" className="flex items-center gap-3">
+                        <img src={logo} alt="logo" className="w-10 h-10" />
+                        <span className="text-2xl font-bold bg-gradient-to-r from-neonAccent to-cyan-400 bg-clip-text text-transparent tracking-wide">
+                            Jesaya Hamonangan
+                        </span>
+                    </NavLink>
+                    <div className='hidden md:flex items-center gap-2'>
+                        <NavLink to='/' className={navLinkClass}>Home</NavLink>
+                        <NavLink to='/characters' className={navLinkClass}>Characters</NavLink>
+                    </div>
                 </div>
                 <div className="flex items-center gap-6">
                     <span className="font-medium text-slate-300 border-r border-slate-700 pr-6">

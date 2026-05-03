@@ -7,7 +7,7 @@ import { loginUser } from '../actions/User.actions';
 export default function Login() {
   const navigate = useNavigate();
 
-  const [cookies, setCookies] = useCookies(["jwt_token", "email", "isLoggedIn"]);
+  const [cookies, setCookies] = useCookies(["email", "isLoggedIn"]);
   const [formData, setFormData] = useState({
     email: cookies.email || '',
     password: '',
@@ -31,12 +31,11 @@ export default function Login() {
     
     loginUser(formData)
     .then((response) => {
-      if (response.data) {
+      if (response?.success && response.data?.data) {
         console.log(response)
-        setCookies("jwt_token", response.data.token, { path: '/' });
-        setCookies("email", response.data.payload.email, { path: '/' });
+        setCookies("email", response.data.data.email, { path: '/' });
+        setCookies("userId", response.data.data._id, { path: '/' });
         setCookies("isLoggedIn", true, { path: '/' });
-        navigate("/shop");
       } else {
         console.log(response)
         alert("Failed to Login!");
