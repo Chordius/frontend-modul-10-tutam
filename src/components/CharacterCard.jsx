@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getCharacterPortraitUrl } from '../utils/characterPortrait';
 
 function CharacterCard({ character }) {
     const [imageError, setImageError] = useState(false);
-    const name = character.name.toLowerCase().replace(/\s+/g, '_');
-    const imgSrc = `/src/assets/portrait_${name}.png`;
+    const imgSrc = getCharacterPortraitUrl(character.name);
 
     const elementColorMap = {
         Fire: 'bg-[#dc5151]',
@@ -26,7 +26,7 @@ function CharacterCard({ character }) {
                 <div 
                     className={`relative w-full h-40 flex items-center justify-center overflow-hidden ${rarityGradientMap[character.rarity] || rarityGradientMap[4]}`}
                 >
-                    {!imageError ? (
+                    {!imageError && imgSrc ? (
                         <img
                             src={imgSrc}
                             alt={character.name}

@@ -4,6 +4,7 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { API_BASE_URL } from '../config/env';
+import { getCharacterPortraitUrl } from '../utils/characterPortrait';
 
 function CharacterReview() {
     const { id } = useParams();
@@ -15,8 +16,7 @@ function CharacterReview() {
 
     const getCharacterImage = () => {
         if (!character) return '';
-        const name = character.name.toLowerCase().replace(/\s+/g, '_');
-        return `/src/assets/portrait_${name}.png`;
+        return getCharacterPortraitUrl(character.name);
     };
     
     const elementIconColorMap = {
