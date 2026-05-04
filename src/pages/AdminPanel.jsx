@@ -24,7 +24,9 @@ function Admin() {
     const [charElement, setCharElement] = useState('');
     const [charRarity, setCharRarity] = useState(4);
     const [charPage, setCharPage] = useState('');
-    const [charSkills, setCharSkills] = useState([{ skill_name: '', skill_detail: '' }]);
+    const [charSkills, setCharSkills] = useState([{ skill_name: '', skill_detail: '', skill_type: '', skill_target: '' }]);
+    const [charTier, setCharTier] = useState('A');
+    const [editingCharId, setEditingCharId] = useState(null);
 
     // Lists
     const [forums, setForums] = useState([]);
@@ -123,15 +125,57 @@ function Admin() {
                 element: charElement,
                 rarity: parseInt(charRarity),
                 page: charPage,
-                skills: charSkills.filter(s => s.skill_name && s.skill_detail)
+                skills: charSkills.filter(s => s.skill_name && s.skill_detail).map(s => ({
+                    skill_name: s.skill_name,
+                    skill_detail: s.skill_detail,
+                    skill_type: s.skill_type || '',
+                    skill_target: s.skill_target || ''
+                })),
+                tier: charTier
             });
 
             setMessage('Character created successfully!');
             setCharName('');
             setCharElement('');
             setCharRarity(4);
-            setCharSkills([{ skill_name: '', skill_detail: '' }]);
+            setCharSkills([{ skill_name: '', skill_detail: '', skill_type: '', skill_target: '' }]);
+            setCharTier('A');
             setCharPage('');
+
+            // Reload characters
+            const charsRes = await axios.get(`${API_BASE_URL}/characters/`);
+            const charsData = charsRes.data;
+            setCharacters(Array.isArray(charsData.data) ? charsData.data : []);
+        } catch (err) {
+            setMessage(`Error: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUpdateCharacter = async (e) => {
+        e.preventDefault();
+        if (!editingCharId) return setMessage('No character selected for editing');
+        setLoading(true);
+        setMessage('');
+
+        try {
+            await axios.put(`${API_BASE_URL}/characters/${editingCharId}`, {
+                name: charName,
+                element: charElement,
+                rarity: parseInt(charRarity),
+                page: charPage,
+                skills: charSkills.filter(s => s.skill_name && s.skill_detail).map(s => ({
+                    skill_name: s.skill_name,
+                    skill_detail: s.skill_detail,
+                    skill_type: s.skill_type || '',
+                    skill_target: s.skill_target || ''
+                })),
+                tier: charTier
+            });
+
+            setMessage('Character updated successfully!');
+            setEditingCharId(null);
 
             // Reload characters
             const charsRes = await axios.get(`${API_BASE_URL}/characters/`);
@@ -173,7 +217,7 @@ function Admin() {
 
     const addSkill = (isCharacter = false) => {
         if (isCharacter) {
-            setCharSkills([...charSkills, { skill_name: '', skill_detail: '' }]);
+            setCharSkills([...charSkills, { skill_name: '', skill_detail: '', skill_type: '', skill_target: '' }]);
         }
     };
 
@@ -181,6 +225,26 @@ function Admin() {
         if (isCharacter) {
             setCharSkills(charSkills.filter((_, i) => i !== index));
         }
+    };
+
+    const handleEditCharacter = (char) => {
+        setEditingCharId(char._id);
+        setCharName(char.name || '');
+        setCharElement(char.element || '');
+        setCharRarity(char.rarity || 4);
+        setCharPage(char.page?._id || '');
+        setCharTier(char.tier || 'A');
+        setCharSkills((char.skills && Array.isArray(char.skills) && char.skills.length > 0)
+            ? char.skills.map(s => ({
+                skill_name: s.skill_name || '',
+                skill_detail: s.skill_detail || '',
+                skill_type: s.skill_type || '',
+                skill_target: s.skill_target || ''
+            }))
+            : [{ skill_name: '', skill_detail: '', skill_type: '', skill_target: '' }]
+        );
+        // Switch to character tab if necessary
+        setActiveTab('character');
     };
 
     const elements = [
@@ -309,7 +373,7 @@ function Admin() {
                                 </div>
                             </form>
                         ) : (
-                            <form onSubmit={handleCreateCharacter} className='bg-cyan-950 p-6 rounded-lg border border-cyan-800'>
+                            <form onSubmit={editingCharId ? handleUpdateCharacter : handleCreateCharacter} className='bg-cyan-950 p-6 rounded-lg border border-cyan-800'>
                                 <h2 className='text-xl font-bold mb-6'>Character Details</h2>
 
                                 <div className='space-y-4'>
@@ -371,6 +435,20 @@ function Admin() {
                                     </div>
 
                                     <div>
+                                        <label className='block text-sm font-semibold mb-2'>Tier</label>
+                                        <select
+                                            value={charTier}
+                                            onChange={(e) => setCharTier(e.target.value)}
+                                            className='w-full px-4 py-2 bg-cyan-900 border border-cyan-700 rounded focus:outline-none focus:border-cyan-500'
+                                        >
+                                            <option value="S">S</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
                                         <div className='flex justify-between items-center mb-2'>
                                             <label className='block text-sm font-semibold'>Skills *</label>
                                             <button
@@ -398,6 +476,33 @@ function Admin() {
                                                         placeholder="Skill detail"
                                                         className='flex-1 px-3 py-1 bg-cyan-900 border border-cyan-700 rounded text-sm focus:outline-none focus:border-cyan-500'
                                                     />
+                                                    <select
+                                                        value={skill.skill_type}
+                                                        onChange={(e) => handleSkillChange(index, 'skill_type', e.target.value, true)}
+                                                        required
+                                                        className='px-4 py-2 bg-cyan-900 border border-cyan-700 rounded focus:outline-none focus:border-cyan-500'
+                                                    >
+                                                        <option value={""}>None</option>
+                                                        <option value={"Basic ATK"}>Basic ATK</option>
+                                                        <option value={"Enhanced Basic ATK"}>Enhanced Basic ATK</option>
+                                                        <option value={"First Skill"}>First Skill</option>
+                                                        <option value={"Second Skill"}>Second Skill</option>
+                                                        <option value={"Coup de Grace"}>Coup de Grace</option>
+                                                    </select>
+                                                    <select
+                                                        value={skill.skill_target}
+                                                        onChange={(e) => handleSkillChange(index, 'skill_target', e.target.value, true)}
+                                                        required
+                                                        className='px-4 py-2 bg-cyan-900 border border-cyan-700 rounded focus:outline-none focus:border-cyan-500'
+                                                    >
+                                                        <option value={""}>None</option>
+                                                        <option value={"Single-Target"}>Single-Target</option>
+                                                        <option value={"Blast"}>Blast</option>
+                                                        <option value={"AoE"}>AoE</option>
+                                                        <option value={"Self"}>Self</option>
+                                                        <option value={"Ally"}>Ally</option>
+                                                        <option value={"All Allies"}>All Allies</option>
+                                                    </select>
                                                     <button
                                                         type="button"
                                                         onClick={() => removeSkill(index, true)}
@@ -415,7 +520,7 @@ function Admin() {
                                         disabled={loading}
                                         className='w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 py-2 rounded font-semibold transition'
                                     >
-                                        {loading ? 'Creating...' : 'Create Character'}
+                                        {loading ? (editingCharId ? 'Updating...' : 'Creating...') : (editingCharId ? 'Update Character' : 'Create Character')}
                                     </button>
                                 </div>
                             </form>
@@ -445,11 +550,11 @@ function Admin() {
                             </div>
                         ) : (
                             <div className='bg-cyan-950 p-6 rounded-lg border border-cyan-800'>
-                                <h2 className='text-xl font-bold mb-6'>⚔️ Existing Characters ({characters.length})</h2>
+                                <h2 className='text-xl font-bold mb-6'>Existing Characters ({characters.length})</h2>
                                 <div className='space-y-3 max-h-96 overflow-y-auto'>
                                     {characters.length > 0 ? (
                                         characters.map(char => (
-                                            <div key={char._id} className='bg-cyan-900 p-4 rounded border border-cyan-700 flex justify-between items-start gap-4'>
+                                                <div key={char._id} className='bg-cyan-900 p-4 rounded border border-cyan-700 flex justify-between items-start gap-4'>
                                                 <div className='flex-1'>
                                                     <h3 className='font-bold'>{char.name}</h3>
                                                     <div className='flex gap-2 mt-2'>
@@ -460,12 +565,20 @@ function Admin() {
                                                         Forum: {char.page?.title || 'N/A'}
                                                     </div>
                                                 </div>
-                                                <button
-                                                    onClick={() => handleDeleteCharacter(char._id)}
-                                                    className='bg-red-700 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold'
-                                                >
-                                                    Delete
-                                                </button>
+                                                <div className='flex gap-2'>
+                                                    <button
+                                                        onClick={() => handleEditCharacter(char)}
+                                                        className='bg-amber-700 hover:bg-amber-600 px-3 py-1 rounded text-sm font-semibold'
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteCharacter(char._id)}
+                                                        className='bg-red-700 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold'
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
                                         ))
                                     ) : (

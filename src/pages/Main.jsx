@@ -20,7 +20,7 @@ function Main() {
             id: 3,
             title: "Tier List",
             image: "https://picsum.photos/500",
-            link: "/"
+            link: "tier-list"
         },
         {
             id: 4,

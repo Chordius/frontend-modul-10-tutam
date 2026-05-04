@@ -5,6 +5,7 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Characters from "./pages/Characters";
 import CharacterReview from "./pages/CharacterReview";
+import TierList from "./pages/TierList";
 import AdminPanel from "./pages/AdminPanel";
 import "./App.css";
 
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/pirate-rail" element={<Main />}/>
+          <Route path="/tier-list" element={<TierList />} />
           <Route path="/characters" element={<Characters />} />
           <Route path="/character/:id" element={<CharacterReview />} />
           <Route path="/admin" 

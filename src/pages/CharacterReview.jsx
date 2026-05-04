@@ -20,19 +20,19 @@ function CharacterReview() {
     };
     
     const elementIconColorMap = {
-        Fire: '#dc5151',
+        Fire: 'dc5151',
         Water: '#82abcd',
-        Wind: '#82cd98',
+        Wind: '#6EAD80',
         Earth: '#8B572A',
         Lightning: '#aa61b7'
     };
 
     const elementCardColorMap = {
-        Fire: { bg: 'from-[#5a1f1f]', border: 'border-[#a84545]', text: 'text-[#ff9999]' },
-        Water: { bg: 'from-[#1a3a52]', border: 'border-[#4a7a9e]', text: 'text-[#6eb3e8]' },
-        Wind: { bg: 'from-[#29665C]', border: 'border-[#458a5f]', text: 'text-[#7fd9a1]' },
-        Earth: { bg: 'from-[#4a3420]', border: 'border-[#9a6b3f]', text: 'text-[#d4a574]' },
-        Lightning: { bg: 'from-[#3a1a4a]', border: 'border-[#8a5a9a]', text: 'text-[#d4a1ff]' }
+        Fire: { bg: 'bg-[#dc5151]', gradient: 'from-[#5a1f1f]', border: 'border-[#a84545]', text: 'text-[#ff9999]' },
+        Water: { bg: 'bg-[#82abcd]', gradient: 'from-[#1a3a52]', border: 'border-[#4a7a9e]', text: 'text-[#6eb3e8]' },
+        Wind: { bg: 'bg-[#6EAD80]', gradient: 'from-[#29665C]', border: 'border-[#458a5f]', text: 'text-[#7fd9a1]' },
+        Earth: { bg: 'bg-[#8B572A]', gradient: 'from-[#4a3420]', border: 'border-[#9a6b3f]', text: 'text-[#d4a574]' },
+        Lightning: { bg: 'bg-[#aa61b7]', gradient: 'from-[#3a1a4a]', border: 'border-[#8a5a9a]', text: 'text-[#d4a1ff]' }
     };
 
     const rarityGradientMap = {
@@ -152,8 +152,7 @@ function CharacterReview() {
                             
                             <div className='flex gap-3 mb-6 flex-wrap'>
                             <div 
-                                className='px-4 py-2 rounded-lg'
-                                style={{backgroundColor: elementIconColorMap[character.element] || '#1d4ed8'}}
+                                className={`px-4 py-2 rounded-lg ${elementCardColorMap[character.element].bg}`}
                             >
                                 <div className='text-xs opacity-75'>Element</div>
                                 <div className='font-bold text-lg'>{character.element}</div>
@@ -199,14 +198,21 @@ function CharacterReview() {
                     {character.skills && character.skills.length > 0 ? (
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                             {character.skills.map((skill, index) => (
-                                <div 
-                                    key={index} 
-                                    className={`bg-gradient-to-b bg-[#1A2435] p-4 rounded border transition hover:opacity-80 ${elementCardColorMap[character.element]?.bg || 'bg-[#1a3a52]'} ${elementCardColorMap[character.element]?.border || 'border-[#4a7a9e]'}`}
-                                >
-                                    <h3 
-                                        className={`text-lg font-bold mb-2 ${elementCardColorMap[character.element]?.text || 'text-[#6eb3e8]'}`}
-                                    >{skill.skill_name}</h3>
-                                    <p className='text-gray-300'>{skill.skill_detail}</p>
+                                <div key={index} className='grid grid-rows-4 grid-cols-1'>
+                                    <div className='row-span-1 min-h-16 grid grid-cols-3 grid-rows-1 gap-x-3 bg-[#1A2435] border-l-2 border-r-2 border-t-2 border-[#263246]'>
+                                        <div className={`p-4 flex flex-col justify-center items-center col-span-1 ${elementCardColorMap[character.element].bg}`}>
+                                            {skill.skill_type}
+                                        </div>
+                                        <h3
+                                            className={`flex flex-col justify-center items-start text-lg font-bold ${elementCardColorMap[character.element]?.text || 'text-[#6eb3e8]'} col-span-2`}
+                                        >
+                                            <label>{skill.skill_name}</label>
+                                            <label className='font-normal text-base text-gray-300'>{skill.skill_target}</label>
+                                        </h3>
+                                    </div>
+                                    <div className={`row-span-4 bg-gradient-to-b bg-[#1A2435] p-4 border rounded rounded-t-none transition hover:opacity-80 ${elementCardColorMap[character.element]?.gradient || 'bg-[#1a3a52]'} ${elementCardColorMap[character.element]?.border || 'border-[#4a7a9e]'}`}>
+                                        <p className='text-gray-300'>{skill.skill_detail}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>

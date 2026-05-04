@@ -43,6 +43,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-6">
                     <div className='hidden md:flex items-center gap-2'>
                         <NavLink to='/' className={navLinkClass}>Home</NavLink>
+                        <NavLink to='/tier-list' className={navLinkClass}>Tier List</NavLink>
                         <NavLink to='/characters' className={navLinkClass}>Characters</NavLink>
                         {isLoggedIn ? (
                             <>

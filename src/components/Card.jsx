@@ -5,7 +5,7 @@ function Card({ item }) {
     return (
         <Link
             to={`/${item.link}`}
-            className='flex flex-row w-full h-24 justify-start items-center bg-cyan-950 rounded-lg overflow-hidden hover:bg-cyan-900 transition-colors'
+            className='flex flex-row w-full h-24 justify-start items-center bg-[#182131] rounded-lg overflow-hidden hover:bg-[#1C8683] duration-200 transition-colors'
         >
             <img
                 src={item.image}
